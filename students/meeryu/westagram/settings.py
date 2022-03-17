@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-from sqlite3 import DatabaseError
 from my_settings import DATABASES,SECRET_KEY
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -119,7 +118,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 APPEND_SLASH = False
 
-CORS_ORIGIN_ALLOW_ALL  =True
+CORS_ORIGIN_ALLOW_ALL  = True
 CORS_ALLOW_CREDENTIALS = True
     
 CORS_ALLOW_METHODS = (
