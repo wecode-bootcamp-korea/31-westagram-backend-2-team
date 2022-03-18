@@ -30,8 +30,6 @@ class UserView(View):
                 email        = data['email'],
                 password     = data['password'],
                 phone_number = data['phone_number']
-                # created_at   = data['created_at'],
-                # updated_at   = data['updated_at']
             )
             return JsonResponse({"message":"SUCCESS"}, status=201)
         except KeyError:
