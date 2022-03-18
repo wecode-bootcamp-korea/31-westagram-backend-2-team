@@ -6,7 +6,7 @@ from django.views import View
 
 from users.models import User
 
-class UserView(View):
+class RegistrationView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -16,14 +16,15 @@ class UserView(View):
             password     = data['password']
             phone_number = data['phone_number']
            
-            emailchecker = re.compile("^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
-            passwordchecker = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$")
+            REGEX_EMAIL    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+            REGEX_PASSWORD = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
 
-            if emailchecker.match(email) == None:
-                return JsonResponse({'Message' : 'Not a valid email'}, status = 400)
+        
+            if not re.match(REGEX_EMAIL, email):
+                return JsonResponse({'Message' : 'INVAILD_EMAIL'}, status = 400)
 
-            elif passwordchecker.match(password) == None:
-                return JsonResponse({'Message' : 'Not a valid password. Password must be more than eight characters including any character, number and speical characters'}, status = 400)
+            elif not re.match(REGEX_PASSWORD, password):
+                return JsonResponse({'Message' : 'INVALID_PASSWORD'}, status = 400)
 
             else:
                 User.objects.create(
