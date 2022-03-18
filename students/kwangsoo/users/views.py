@@ -9,15 +9,13 @@ from users.models import User
 class UserView(View):
     def post(self, request):
         try:
-            data = Json.loads(request.body)
+            data = json.loads(request.body)
 
             name         = data['name']
             email        = data['email']
             password     = data['password']
             phone_number = data['phone_number']
-            created_at   = data['created_at']
-            updated_at   = data['updated_at']
-          
+           
             emailchecker = re.compile("^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
             passwordchecker = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$")
 
@@ -29,14 +27,12 @@ class UserView(View):
 
             else:
                 User.objects.create(
-                    name = name
-                    email = email
-                    password = password
-                    phone_number = phone_number
-                    created_at = created_at
-                    updated_at = updated_at
+                    name         = name,
+                    email        = email,
+                    password     = password,
+                    phone_number = phone_number,
                 )
-                return JsonResponse('message' : 'SUCCESS', status = 201)
+                return JsonResponse({'message' : 'SUCCESS'}, status = 201)
 
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
