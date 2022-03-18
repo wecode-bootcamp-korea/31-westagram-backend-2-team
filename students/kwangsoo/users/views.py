@@ -23,17 +23,16 @@ class RegistrationView(View):
             if not re.match(REGEX_EMAIL, email):
                 return JsonResponse({'Message' : 'INVAILD_EMAIL'}, status = 400)
 
-            elif not re.match(REGEX_PASSWORD, password):
+            if not re.match(REGEX_PASSWORD, password):
                 return JsonResponse({'Message' : 'INVALID_PASSWORD'}, status = 400)
 
-            else:
-                User.objects.create(
-                    name         = name,
-                    email        = email,
-                    password     = password,
-                    phone_number = phone_number,
-                )
-                return JsonResponse({'message' : 'SUCCESS'}, status = 201)
+            User.objects.create(
+                name         = name,
+                email        = email,
+                password     = password,
+                phone_number = phone_number,
+            )
+            return JsonResponse({'message' : 'SUCCESS'}, status = 201)
 
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
