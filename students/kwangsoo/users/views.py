@@ -1,7 +1,6 @@
 import json
 import re
 
-from django.db import IntegrityError
 from django.http  import JsonResponse
 from django.views import View
 
@@ -27,6 +26,10 @@ class RegistrationView(View):
             if not re.match(REGEX_PASSWORD, password):
                 return JsonResponse({'Message' : 'INVALID_PASSWORD'}, status = 400)
 
+            if User.objects.filter(email = email).exist():
+                return JsonResponse({'Message' : 'RESIGTERED_EMAIL'}, status = 400)
+
+
             User.objects.create(
                 name         = name,
                 email        = email,
@@ -37,6 +40,3 @@ class RegistrationView(View):
 
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
-
-        except IntegrityError:
-                return JsonResponse({'Message' : 'RESIGTERED_EMAIL'}, status = 400)
