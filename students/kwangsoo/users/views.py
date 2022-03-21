@@ -27,7 +27,7 @@ class RegistrationView(View):
                 return JsonResponse({'Message' : 'INVALID_PASSWORD'}, status = 400)
 
             if User.objects.filter(email = email).exists():
-                return JsonResponse({'Message' : 'RESIGTERED_EMAIL'}, status = 400)
+                return JsonResponse({'Message' : 'REGISTERED_EMAIL'}, status = 400)
 
             User.objects.create(
                 name         = name,
