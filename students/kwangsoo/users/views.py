@@ -26,9 +26,8 @@ class RegistrationView(View):
             if not re.match(REGEX_PASSWORD, password):
                 return JsonResponse({'Message' : 'INVALID_PASSWORD'}, status = 400)
 
-            if User.objects.filter(email = email).exist():
+            if User.objects.filter(email = email).exists():
                 return JsonResponse({'Message' : 'RESIGTERED_EMAIL'}, status = 400)
-
 
             User.objects.create(
                 name         = name,
