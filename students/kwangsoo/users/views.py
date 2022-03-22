@@ -1,5 +1,6 @@
 import json
 import re
+import bcrypt
 
 from django.http  import JsonResponse
 from django.views import View
@@ -28,6 +29,9 @@ class RegistrationView(View):
 
             if User.objects.filter(email = email).exists():
                 return JsonResponse({'Message' : 'REGISTERED_EMAIL'}, status = 400)
+
+            hashed_pw    = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            hashed_pw    = hashed_pw.decode('utf-8')
 
             User.objects.create(
                 name         = name,
