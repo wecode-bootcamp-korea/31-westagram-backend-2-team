@@ -3,7 +3,6 @@ import re
 
 from django.http  import JsonResponse
 from django.views import View
-from django.core.exceptions import ObjectDoesNotExist
 
 from users.models import User
 
