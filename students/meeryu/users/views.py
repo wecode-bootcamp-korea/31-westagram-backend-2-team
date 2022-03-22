@@ -28,8 +28,7 @@ class SignUpView(View):
             if not re.match(REGEX_PASSWORD, password):
                 return JsonResponse({"message" : "INVALID_PASSWORD"}, status = 400)
 
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            hashed_password = hashed_password.decode('utf-8')
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             
             User.objects.create(
                 name         = name,
@@ -51,7 +50,7 @@ class SignInView(View):
                 if not User.objects.filter(email = email, password = password):
                     return JsonResponse({"message" : "INVALID_USER"}, status = 401)
 
-                return JsonResponse({"message" : "SUCCESS"}, status = 201)
+                return JsonResponse({"message" : "SUCCESS"}, status = 200)
 
             except KeyError:
                 return JsonResponse({"message" : "KEY_ERROR"}, status = 400)
