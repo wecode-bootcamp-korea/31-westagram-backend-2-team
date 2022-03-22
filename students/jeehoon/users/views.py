@@ -1,10 +1,11 @@
-import json, bcrypt
+import json, bcrypt, jwt
 
 from django.http  import JsonResponse
 from django.views import View
+from django.conf  import settings
 
-from users.models    import User
-from users.validator import email_validate, password_validate
+from users.models       import User
+from users.validator    import email_validate, password_validate
 
 class SignUpView(View):
     def post(self, request):
@@ -39,17 +40,16 @@ class SignInView(View):
             data           = json.loads(request.body)
             input_email    = data['email']
             input_password = data['password']
+            user           = User.objects.get(email = input_email)
             
-            email_validate(input_email)
-            password_validate(input_password)
+            if not bcrypt.checkpw(input_password.encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({'Message': 'Invalid_User'}, status=401)
             
-            if not User.objects.filter(
-                email    = input_email,
-                password = input_password
-                ).exists():
-                return JsonResponse({'Message' : "Invalid_User"}, status=401)
+            access_token = jwt.encode({'id':user.id}, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+            return JsonResponse({'Token' : access_token}, status=200)
             
-            return JsonResponse({'Message' : 'Success'}, status=200)
-            
+        except User.DoesNotExist:
+            return JsonResponse({'Message': 'Invalid_User'}, status=401)
+        
         except KeyError:
             return JsonResponse({'Message' : 'Key_Error'}, status=400)
