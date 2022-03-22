@@ -1,6 +1,4 @@
-import json
-import re
-import bcrypt
+import json, re, bcrypt, jwt
 
 from django.http  import JsonResponse
 from django.views import View
@@ -17,6 +15,7 @@ class RegistrationView(View):
             email        = data['email']
             password     = data['password']
             hashed_pw    = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            hashed_pw    = hashed_pw.decode('utf-8')
             phone_number = data['phone_number']
            
             REGEX_EMAIL    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -35,10 +34,10 @@ class RegistrationView(View):
                 password     = hashed_pw,
                 phone_number = phone_number,
             )
-            return JsonResponse({'message' : 'SUCCESS'}, status = 201)
+            return JsonResponse({'Message' : 'SUCCESS'}, status = 201)
 
         except KeyError:
-            return JsonResponse({"message": "KEY_ERROR"}, status = 400)
+            return JsonResponse({'Message': 'KEY_ERROR'}, status = 400)
 
 
 
@@ -50,12 +49,20 @@ class LoginView(View):
             email     = data['email']
             password  = data['password']
 
-            db_password = User.objects.get(email=email)
+            user = User.objects.get(email=eamil)
 
-            if not bcrypt.checkpw(password.encode('utf-8'), db_password):
-                return JsonResponse({"message" : "INAVLID_USER"})
+            db_password = user.password
 
-            return JsonResponse({"message" : "SUCCESS"}, status = 200)
+            if not User.objects.get(email=email):
+                return JsonResponse({"Message" : "EMAIL_NOT_REGISTERED"}, status = 401)
+
+            if not bcrypt.checkpw(password.encode('utf-8'), db_password.encode('utf-8')):
+                return JsonResponse({"Message" : "INVLID_PASSWORD"}, status = 401)
+
+            SECRET = 
+            access_token = jwt.encode({"id" : user.id, SECRET, algorithm = "HS256"})
+
+            return JsonResponse({"Message" : "SUCCESS"}, {"token" = access_token} , status = 200)
 
         except KeyError:
-            return JsonResponse({"message" : "KEY_ERROR"}, status = 400)
+            return JsonResponse({"Message" : "KEY_ERROR"}, status = 400)
