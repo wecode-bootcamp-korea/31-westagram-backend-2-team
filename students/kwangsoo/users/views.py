@@ -36,7 +36,7 @@ class RegistrationView(View):
             User.objects.create(
                 name         = name,
                 email        = email,
-                password     = password,
+                password     = hashed_pw,
                 phone_number = phone_number,
             )
             return JsonResponse({'message' : 'SUCCESS'}, status = 201)
