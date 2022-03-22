@@ -41,11 +41,8 @@ class SignInView(View):
             email_validate(input_email)
             password_validate(input_password)
             
-            if not User.objects.filter(
-                email    = input_email,
-                password = input_password
-                ):
-                return JsonResponse({'Message' : "INVALID_USER"}, status=401)
+            if not User.objects.get(email = input_email).password:
+                return JsonResponse({'Message' : "Invalid_User"}, status=401)
             return JsonResponse({'Message' : 'Success'}, status=200)
             
         except KeyError:
