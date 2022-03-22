@@ -14,8 +14,10 @@ class SignUpView(View):
             REGEX_EMAIL    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
             REGEX_PASSWORD = '^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$'
 
-            email    = data['email']
-            password = data['password']
+            name         = data['name']
+            email        = data['email']
+            password     = data['password']
+            phone_number = data['phone_number']
  
             if not re.match(REGEX_EMAIL, email):
                 return JsonResponse({"message" : "INVALID_EMAIL"}, status = 400)
@@ -26,13 +28,14 @@ class SignUpView(View):
             if not re.match(REGEX_PASSWORD, password):
                 return JsonResponse({"message" : "INVALID_PASSWORD"}, status = 400)
 
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            hashed_password = hashed_password.decode('utf-8')
             
             User.objects.create(
-                name         = data['name'],
-                email        = data['email'],
+                name         = name,
+                email        = email,
                 password     = hashed_password,
-                phone_number = data['phone_number']
+                phone_number = phone_number
             )
             return JsonResponse({"message" : "SUCCESS"}, status = 201)
         except KeyError:
