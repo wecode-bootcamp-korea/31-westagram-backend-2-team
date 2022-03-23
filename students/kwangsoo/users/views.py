@@ -2,7 +2,6 @@ import json, re, bcrypt, jwt
 
 from django.http  import JsonResponse
 from django.views import View
-from django.core.exceptions import ObjectDoesNotExist
 
 from users.models import User
 from my_settings import SECRET_KEY, ALGORITHM
