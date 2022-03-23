@@ -1,4 +1,5 @@
 import json, bcrypt, jwt
+from django.forms import ValidationError
 
 from django.http  import JsonResponse
 from django.views import View
@@ -33,6 +34,8 @@ class SignUpView(View):
             return JsonResponse({'Message' : 'Success'}, status=201)
         except KeyError:
             return JsonResponse({'Message' : 'Key_Error'}, status=400)
+        except ValidationError as e:
+            return JsonResponse({'Message' : 'Invalid_Key'}, status=400)
 
 class SignInView(View):
     def post(self, request):
