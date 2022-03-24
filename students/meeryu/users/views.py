@@ -52,14 +52,18 @@ class SignInView(View):
                 if not User.objects.filter(email = email):
                     return JsonResponse({"message" : "INVALID_USER"}, status = 401)
 
-                enter_password  = User.objects.get(email = email).password
-                check_password = bcrypt.checkpw(password.encode('utf-8'), enter_password.encode('utf-8'))
+                input_password  = User.objects.get(email = email).password
+                check_password  = bcrypt.checkpw(password.encode('utf-8'), input_password.encode('utf-8'))
                 if not check_password:
                     return JsonResponse({"message" : "INVALID_PASSWORD"}, status = 401)
 
                 payload      = User.objects.get(email = email).id
                 access_token = jwt.encode({"id" : payload}, settings.SECRET_KEY, algorithm = settings.ALGORITHM)
-                return JsonResponse({"message" : access_token}, status = 201)
+                return JsonResponse({
+                    "message" : "SUCCESS",
+                    "token" : access_token
+                    }, status = 200)
 
             except KeyError:
                 return JsonResponse({"message" : "KEY_ERROR"}, status = 400)
+                
