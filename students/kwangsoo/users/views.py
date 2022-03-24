@@ -3,8 +3,8 @@ import json, re, bcrypt, jwt
 from django.http  import JsonResponse
 from django.views import View
 
-from users.models import User
-from my_settings import SECRET_KEY, ALGORITHM
+from users.models       import User
+from westagram.settings import SECRET_KEY, ALGORITHM
 
 class RegistrationView(View):
     def post(self, request):
@@ -30,9 +30,7 @@ class RegistrationView(View):
             if User.objects.filter(email = email).exists():
                 return JsonResponse({'Message' : 'REGISTERED_EMAIL'}, status = 400)
 
-            hashed_pw    = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            hashed_pw    = hashed_pw.decode('utf-8')
-
+            hashed_pw    = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
             User.objects.create(
                 name         = name,
