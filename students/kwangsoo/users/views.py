@@ -1,9 +1,8 @@
-import json
-import re
-import bcrypt
+import json, re, bcrypt, jwt
 
 from django.http  import JsonResponse
 from django.views import View
+from django.conf  import settings
 
 from users.models import User
 
@@ -22,13 +21,13 @@ class RegistrationView(View):
 
         
             if not re.match(REGEX_EMAIL, email):
-                return JsonResponse({'Message' : 'INVAILD_EMAIL'}, status = 400)
+                return JsonResponse({"message" : "INVAILD_EMAIL"}, status = 400)
 
             if not re.match(REGEX_PASSWORD, password):
-                return JsonResponse({'Message' : 'INVALID_PASSWORD'}, status = 400)
+                return JsonResponse({"message" : "INVALID_PASSWORD"}, status = 400)
 
             if User.objects.filter(email = email).exists():
-                return JsonResponse({'Message' : 'REGISTERED_EMAIL'}, status = 400)
+                return JsonResponse({"message" : "REGISTERED_EMAIL"}, status = 400)
 
             hashed_password  = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
@@ -38,7 +37,7 @@ class RegistrationView(View):
                 password     = hashed_password,
                 phone_number = phone_number,
             )
-            return JsonResponse({'message' : 'SUCCESS'}, status = 201)
+            return JsonResponse({"message" : 'SUCCESS'}, status = 201)
 
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
@@ -53,10 +52,19 @@ class LoginView(View):
             email    = data['email']
             password = data['password']
 
-            if not User.objects.filter(email = email, password = password):
-                return JsonResponse({"message" : "INVALID_USER"}, status = 401)
+            user           = User.objects.get(email = email)
+            db_password    = user.password
+            password_check = bcrypt.checkpw(password.encode('utf-8'), db_password.encode('utf-8'))
 
-            return JsonResponse({"message" : "SUCCESS"}, status = 200)
+            if not password_check:
+                return JsonResponse({"message" : "INVALID_PASSWORD"}, status = 401)
+
+            access_token = jwt.encode({"id" : user.id}, settings.SECRET_KEY, algorithm = settings.ALGORITHM)
+
+            return JsonResponse({"message" : "SUCCESS", "token" : access_token}, status = 200)
 
         except KeyError:
-            return JsonResponse({"message" : "KEY_ERROR"}, status = 400)
+            return JsonResponse({"message" : "KEY_ERROR"},  status = 400)
+
+        except User.DoesNotExist:
+            return JsonResponse({"message" : "INVALID_USER"}, status = 401)
